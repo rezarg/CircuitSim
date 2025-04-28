@@ -147,7 +147,6 @@ while RUNNING:
 		button = buttons[i]
 		if i == currentBlockType: button.color = (64, 64, 72)
 		else: button.color = (32, 32, 48)
-		button.drawBoundingBox(window)
 		button.draw(window)
 
 	text = font.render("TPS: " + str(TPS), True, (255, 255, 255))
