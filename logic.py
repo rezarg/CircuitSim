@@ -6,7 +6,7 @@ blocks = None
 
 typeColorsOff = {
 	"and": (128, 128, 255),
-	"nand": (255, 32, 128),
+	"nand": (192, 0, 64),
 	"or": (128, 255, 128),
 	"nor": (255, 128, 32),
 	"xor": (128, 255, 255),
@@ -21,7 +21,7 @@ typeColorsOff = {
 
 typeColorsOn = {
 	"and": (0, 0, 255),
-	"nand": (255, 0, 128),
+	"nand": (255, 64, 192),
 	"or": (128, 255, 128),
 	"nor": (255, 255, 128),
 	"xor": (0, 255, 255),
@@ -40,7 +40,9 @@ def init(window_: pygame.Window, font_: pygame.font.Font, blocks_: list):
 	font = font_
 	blocks = blocks_
 
-def drawConnection(x1, y1, x2, y2, color = (128, 128, 128)):
+def drawConnection(x1, y1, x2, y2, camX, camY, color=(128, 128, 128)):
+	x1, y1 = x1 + camX, y1 + camY
+	x2, y2 = x2 + camX, y2 + camY
 	pygame.draw.line(window, color, (x1, y1), (x2, y2), 10)
 	angle = math.atan2(y2-y1, x2-x1)
 	text = font.render("> > >", True, (0, 0, 0))
@@ -67,14 +69,14 @@ class Block:
 
 		blocks.append(self)
 	
-	def draw(self):
+	def draw(self, camX, camY):
 		if self.value: color = self.colorOn
 		else: color = self.colorOff
-		pygame.draw.rect(window, color, (self.x-9, self.y-9, 18, 18))
+		pygame.draw.rect(window, color, (self.x-9+camX, self.y-9+camY, 18, 18))
 
-	def drawInputs(self):
+	def drawInputs(self, camX, camY):
 		for block in self.inputs:
-			drawConnection(block.x, block.y, self.x, self.y, block.value and (255, 255, 255) or (128, 128, 128))
+			drawConnection(block.x, block.y, self.x, self.y, camX, camY, block.value and (255, 255, 255) or (128, 128, 128))
 
 	def updateIn(self):
 		if self.type == "and":

@@ -16,7 +16,9 @@ RUNNING = True
 TPS = 100
 
 mouseX, mouseY = 0, 0
+lastMousePos = (0, 0)
 dragStartX, dragStartY = 0, 0
+camX, camY, camZoom = 0, 0, 1
 lastTick = 0
 m2 = False
 connecting = False
@@ -31,51 +33,40 @@ blocks: list[Block] = []
 initLogic(window, font, blocks)
 initData(blocks)
 
-def subTuple(t1: tuple, t2: tuple) -> tuple:
+def addTuple(t1: tuple, t2: tuple) -> tuple:
 	res = []
 	for i in range(len(t1)):
-		res.append(t1[i] - t2[i])
+		res.append(t1[i] + t2[i])
 	return tuple(res)
 
 for i in range(len(blockTypes)):
-	tempBlock = Block(blockTypes[i], 0, 0)
-	newButton = Button(blockLabels[i], (4, i*24+4), (20, 20), tempBlock.colorOff)
-	newButton.fontColor = subTuple((255, 255, 255), tempBlock.colorOn)
+	y = (window.get_height() - len(blockTypes) * 32) / 2 + i * 32 + 2
+	newButton = Button(blockLabels[i], (4, y), (28, 28), (32, 32, 48))
 	newButton.margin = 2
 	def action(blockType=i):
 		global currentBlockType
-		print("Selected block type:", blockType)
 		currentBlockType = blockType
 	newButton.action1 = action
 	buttons.append(newButton)
-	blocks.remove(tempBlock)
-	del tempBlock
 
 while RUNNING:
+	mouseDX, mouseDY = 0, 0
+	mouseX, mouseY = addTuple(pygame.mouse.get_pos(), (-camX, -camY))
+
 	suppressClicks = False
 	for event in pygame.event.get():
-		for button in buttons:
-			if button.check(event):
-				suppressClicks = True
-				break
+		suppressClicks = any([button.check(event) for button in buttons])
 		if event.type == pygame.QUIT:
-			encoded = encodeData()
-			open("save-backup.txt", "w+").write(encoded)
+			open("save-backup.txt", "w+").write(encodeData())
 			RUNNING = False
-			quit()
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_w:
-				currentBlockType = (currentBlockType - 1) % len(blockTypes)
-			elif event.key == pygame.K_s:
-				currentBlockType = (currentBlockType + 1) % len(blockTypes)
-			elif event.key == pygame.K_e:
+			if event.key == pygame.K_e:
 				for logic in blocks:
 					if logic.x - 10 < mouseX < logic.x + 10 and logic.y - 10 < mouseY < logic.y + 10:
 						logic.value = not logic.value
 						break
 			elif event.key == pygame.K_i:
-				inputStr = input("Enter block data: ")
-				decodeData(inputStr)
+				decodeData(input("Enter block data: "))
 			elif event.key == pygame.K_o:
 				encodeData()
 			elif event.key == pygame.K_EQUALS or event.key == pygame.K_PLUS or event.key == pygame.K_KP_PLUS:
@@ -130,38 +121,35 @@ while RUNNING:
 				if start and end and start != end:
 					if end not in start.inputs:
 						end.inputs.append(start)
-		if event.type == pygame.MOUSEMOTION:
-			x, y = event.pos
-			mouseX = x // 20 * 20 + 10
-			mouseY = y // 20 * 20 + 10
+
+	mouseDX, mouseDY = addTuple(pygame.mouse.get_pos(), (-lastMousePos[0], -lastMousePos[1]))
 
 	window.fill((0, 0, 0))
 
-	if m2 and connecting: drawConnection(dragStartX, dragStartY, mouseX, mouseY)
+	if m2 and connecting: drawConnection(dragStartX, dragStartY, mouseX, mouseY, camX, camY)
+	elif m2: camX += mouseDX; camY += mouseDY
 	
 	doTick = time.time() - lastTick > 1 / TPS
 	for block in blocks:
-		block.drawInputs()
+		block.drawInputs(camX, camY)
 		if doTick: block.updateIn()
 	for block in blocks:
-		block.draw()
+		block.draw(camX, camY)
 		if doTick: block.updateOut()
 	if doTick: lastTick = time.time()
 
-	pygame.draw.rect(window, (128, 128, 128), (mouseX-8, mouseY-8, 16, 16), 1)
+	pygame.draw.rect(window, (128, 128, 128), (mouseX-8+camX, mouseY-8+camY, 16, 16), 1)
 
-	for button in buttons:
+	for i in range(len(buttons)):
+		button = buttons[i]
+		if i == currentBlockType: button.color = (64, 64, 72)
+		else: button.color = (32, 32, 48)
 		button.draw(window)
-
-	#for i in range(len(blockTypes)):
-	#	window.blit(font.render(blockTypes[i], True, (255, 255, 255)), (26, i*24+4))
-	#	if i == currentBlockType:
-	#		pygame.draw.rect(window, (255, 255, 255), (4, i*24+3, 20, 20))
-	#	else:
-	#		pygame.draw.rect(window, (128, 128, 128), (4, i*24+4, 20, 20))
 
 	text = font.render("TPS: " + str(TPS), True, (255, 255, 255))
 	window.blit(text, (window.get_width() - text.get_width() - 4, 4))
+
+	lastMousePos = pygame.mouse.get_pos()
 
 	pygame.display.flip()
 
