@@ -26,7 +26,7 @@ buttons = []
 suppressClicks = False
 
 blockTypes = ["and", "nand", "or", "nor", "xor", "xnor", "t_flip-flop", "LED-W", "LED-R", "LED-G", "LED-B"]
-blockLabels = ["&", "!&", "|", "!|", "^", "!^", "T", "W", "R", "G", "B"]
+blockLabels = ["and", "nand", "or", "nor", "xor", "xnor", "TFF", "LED W", "LED R", "LED G", "LED B"]
 currentBlockType = 0
 blocks: list[Block] = []
 
@@ -40,8 +40,9 @@ def addTuple(t1: tuple, t2: tuple) -> tuple:
 	return tuple(res)
 
 for i in range(len(blockTypes)):
-	y = (window.get_height() - len(blockTypes) * 32) / 2 + i * 32 + 2
-	newButton = Button(blockLabels[i], (4, y), (28, 28), (32, 32, 48))
+	buttonSize = (72, 32)
+	y = (window.get_height() - len(blockTypes) * buttonSize[1]) / 2 + i * buttonSize[1] + 2
+	newButton = Button(blockLabels[i], (4, y), addTuple(buttonSize, (-4, -4)), (32, 32, 48))
 	newButton.margin = 2
 	def action(blockType=i):
 		global currentBlockType

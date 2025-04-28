@@ -5,6 +5,7 @@ font = None
 blocks = None
 
 typeColorsOff = {
+	"default": (192, 192, 192),
 	"and": (128, 128, 255),
 	"nand": (192, 0, 64),
 	"or": (128, 255, 128),
@@ -16,10 +17,10 @@ typeColorsOff = {
 	"LED-R": (48, 32, 32),
 	"LED-G": (32, 48, 32),
 	"LED-B": (32, 32, 48),
-	"default": (192, 192, 192),
 }
 
 typeColorsOn = {
+	"default": (255, 255, 255),
 	"and": (0, 0, 255),
 	"nand": (255, 64, 192),
 	"or": (128, 255, 128),
@@ -31,7 +32,6 @@ typeColorsOn = {
 	"LED-R": (255, 0, 0),
 	"LED-G": (0, 255, 0),
 	"LED-B": (0, 0, 255),
-	"default": (255, 255, 255),
 }
 
 def init(window_: pygame.Window, font_: pygame.font.Font, blocks_: list):
