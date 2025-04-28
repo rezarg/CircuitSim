@@ -4,6 +4,36 @@ window = None
 font = None
 blocks = None
 
+typeColorsOff = {
+	"and": (128, 128, 255),
+	"nand": (255, 32, 128),
+	"or": (128, 255, 128),
+	"nor": (255, 128, 32),
+	"xor": (128, 255, 255),
+	"xnor": (255, 255, 128),
+	"t_flip-flop": (48, 48, 48),
+	"LED-W": (48, 48, 48),
+	"LED-R": (48, 32, 32),
+	"LED-G": (32, 48, 32),
+	"LED-B": (32, 32, 48),
+	"default": (192, 192, 192),
+}
+
+typeColorsOn = {
+	"and": (0, 0, 255),
+	"nand": (255, 0, 128),
+	"or": (128, 255, 128),
+	"nor": (255, 255, 128),
+	"xor": (0, 255, 255),
+	"xnor": (255, 255, 0),
+	"t_flip-flop": (192, 192, 192),
+	"LED-W": (255, 255, 255),
+	"LED-R": (255, 0, 0),
+	"LED-G": (0, 255, 0),
+	"LED-B": (0, 0, 255),
+	"default": (255, 255, 255),
+}
+
 def init(window_: pygame.Window, font_: pygame.font.Font, blocks_: list):
 	global window, font, blocks
 	window = window_
@@ -30,45 +60,16 @@ class Block:
 		self.value = False
 		self.nextValue = False
 
+		if type in typeColorsOff: self.colorOff = typeColorsOff[type]
+		else: self.colorOff = typeColorsOff["default"]
+		if type in typeColorsOn: self.colorOn = typeColorsOn[type]
+		else: self.colorOn = typeColorsOn["default"]
+
 		blocks.append(self)
 	
 	def draw(self):
-		typeColorsOff = {
-			"and": (128, 128, 255),
-			"nand": (255, 32, 128),
-			"or": (128, 255, 128),
-			"nor": (255, 128, 32),
-			"xor": (128, 255, 255),
-			"xnor": (255, 255, 128),
-			"t_flip-flop": (64, 64, 64),
-			"LED-W": (48, 48, 48),
-			"LED-R": (48, 32, 32),
-			"LED-G": (32, 48, 32),
-			"LED-B": (32, 32, 48),
-			"default": (192, 192, 192),
-		}
-
-		typeColorsOn = {
-			"and": (0, 0, 255),
-			"nand": (255, 0, 128),
-			"or": (128, 255, 128),
-			"nor": (255, 255, 128),
-			"xor": (0, 255, 255),
-			"xnor": (255, 255, 0),
-			"t_flip-flop": (192, 192, 192),
-			"LED-W": (255, 255, 255),
-			"LED-R": (255, 0, 0),
-			"LED-G": (0, 255, 0),
-			"LED-B": (0, 0, 255),
-			"default": (255, 255, 255),
-		}
-
-		if self.value: colors = typeColorsOn
-		else: colors = typeColorsOff
-
-		if self.type in colors: color = colors[self.type]
-		else: color = colors["default"]
-
+		if self.value: color = self.colorOn
+		else: color = self.colorOff
 		pygame.draw.rect(window, color, (self.x-9, self.y-9, 18, 18))
 
 	def drawInputs(self):
