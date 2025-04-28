@@ -33,7 +33,7 @@ class Block:
 		blocks.append(self)
 	
 	def draw(self):
-		typeColors = {
+		typeColorsOff = {
 			"and": (128, 128, 255),
 			"nand": (255, 32, 128),
 			"or": (128, 255, 128),
@@ -41,18 +41,34 @@ class Block:
 			"xor": (128, 255, 255),
 			"xnor": (255, 255, 128),
 			"t_flip-flop": (64, 64, 64),
-			"LED": (64, 64, 64),
+			"LED-W": (64, 64, 64),
+			"LED-R": (64, 32, 32),
+			"LED-G": (32, 64, 32),
+			"LED-B": (32, 32, 64),
+			"default": (192, 192, 192),
+		}
+
+		typeColorsOn = {
+			"and": (0, 0, 255),
+			"nand": (255, 0, 128),
+			"or": (128, 255, 128),
+			"nor": (255, 255, 128),
+			"xor": (0, 255, 255),
+			"xnor": (255, 255, 0),
+			"t_flip-flop": (192, 192, 192),
+			"LED-W": (255, 255, 255),
+			"LED-R": (255, 0, 0),
+			"LED-G": (0, 255, 0),
+			"LED-B": (0, 0, 255),
 			"default": (255, 255, 255),
 		}
 
-		if self.type in typeColors:
-			color = typeColors[self.type]
-		else:
-			color = typeColors["default"]
-		
-		if self.value:
-			color = (255, 255, 255)
-		
+		if self.value: colors = typeColorsOn
+		else: colors = typeColorsOff
+
+		if self.type in colors: color = colors[self.type]
+		else: color = colors["default"]
+
 		pygame.draw.rect(window, color, (self.x-9, self.y-9, 18, 18))
 
 	def drawInputs(self):

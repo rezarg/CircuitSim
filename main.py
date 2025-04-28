@@ -107,21 +107,16 @@ while RUNNING:
 
 	window.fill((0, 0, 0))
 
-	if m2 and connecting:
-		drawConnection(dragStartX, dragStartY, mouseX, mouseY)
+	if m2 and connecting: drawConnection(dragStartX, dragStartY, mouseX, mouseY)
 	
 	doTick = time.time() - lastTick > 1 / TPS
-
 	for block in blocks:
-		if doTick: block.updateIn()
 		block.drawInputs()
-
+		if doTick: block.updateIn()
 	for block in blocks:
 		block.draw()
 		if doTick: block.updateOut()
-	
-	if doTick:
-		lastTick = time.time()
+	if doTick: lastTick = time.time()
 
 	pygame.draw.rect(window, (128, 128, 128), (mouseX-8, mouseY-8, 16, 16), 1)
 
