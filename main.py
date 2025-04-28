@@ -20,7 +20,7 @@ lastTick = 0
 m2 = False
 connecting = False
 
-blockTypes = ["and", "nand", "or", "nor", "xor", "xnor", "t_flip-flop", "LED"]
+blockTypes = ["and", "nand", "or", "nor", "xor", "xnor", "t_flip-flop", "LED-W", "LED-R", "LED-G", "LED-B"]
 currentBlockType = 0
 blocks: list[Block] = []
 

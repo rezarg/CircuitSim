@@ -41,10 +41,10 @@ class Block:
 			"xor": (128, 255, 255),
 			"xnor": (255, 255, 128),
 			"t_flip-flop": (64, 64, 64),
-			"LED-W": (64, 64, 64),
-			"LED-R": (64, 32, 32),
-			"LED-G": (32, 64, 32),
-			"LED-B": (32, 32, 64),
+			"LED-W": (48, 48, 48),
+			"LED-R": (48, 32, 32),
+			"LED-G": (32, 48, 32),
+			"LED-B": (32, 32, 48),
 			"default": (192, 192, 192),
 		}
 
@@ -80,7 +80,7 @@ class Block:
 			self.nextValue = all(input.value for input in self.inputs) and len(self.inputs) > 0
 		elif self.type == "nand":
 			self.nextValue = not all(input.value for input in self.inputs) or len(self.inputs) == 0
-		elif self.type == "or" or self.type == "LED":
+		elif self.type == "or" or self.type.startswith("LED-"):
 			self.nextValue = any(input.value for input in self.inputs)
 		elif self.type == "nor":
 			self.nextValue = not any(input.value for input in self.inputs)
