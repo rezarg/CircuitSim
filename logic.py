@@ -1,4 +1,4 @@
-import pygame, math
+import pygame, math, random
 
 window = None
 font = None
@@ -12,6 +12,7 @@ typeColorsOff = {
 	"nor": (255, 128, 32),
 	"xor": (128, 255, 255),
 	"xnor": (255, 255, 128),
+	"rng": (192, 128, 48),
 	"t_flip-flop": (48, 48, 48),
 	"LED-W": (48, 48, 48),
 	"LED-R": (48, 32, 32),
@@ -27,6 +28,7 @@ typeColorsOn = {
 	"nor": (255, 255, 128),
 	"xor": (0, 255, 255),
 	"xnor": (255, 255, 0),
+	"rng": (255, 192, 128),
 	"t_flip-flop": (192, 192, 192),
 	"LED-W": (255, 255, 255),
 	"LED-R": (255, 0, 0),
@@ -91,6 +93,8 @@ class Block:
 			self.nextValue = len([input for input in self.inputs if input.value]) % 2 == 1
 		elif self.type == "xnor":
 			self.nextValue = len([input for input in self.inputs if input.value]) % 2 == 0
+		elif self.type == "rng":
+			self.nextValue = any(input.value for input in self.inputs) or random.randint(0, 1)
 		elif self.type == "t_flip-flop":
 			power = any(input.value for input in self.inputs)
 			if power and not self.powerBefore:
