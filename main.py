@@ -67,7 +67,7 @@ while RUNNING:
 	for event in pygame.event.get():
 		suppressClicks = any([button.check(event) for button in buttons])
 		if event.type == pygame.QUIT:
-			open("save-backup.txt", "w+").write(encodeData())
+			with open("save-backup.txt", "w+") as f: f.write(encodeData())
 			RUNNING = False
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_e:
@@ -79,6 +79,13 @@ while RUNNING:
 				decodeData(input("Enter block data: "))
 			elif event.key == pygame.K_o:
 				encodeData()
+			elif event.key == pygame.K_s:
+				fileName = input("Save file name: ")
+				data = encodeData()
+				with open(f"{fileName}.txt", "w+") as f: f.write(data)
+			elif event.key == pygame.K_l:
+				fileName = input("Load file name: ")
+				with open(f"{fileName}.txt", "r") as f: decodeData(f.read())
 			elif event.key == pygame.K_EQUALS or event.key == pygame.K_PLUS or event.key == pygame.K_KP_PLUS:
 				TPS += 5
 				if TPS > 1000: TPS = 1000

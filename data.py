@@ -11,6 +11,7 @@ def encodeData():
 	for block in blocks:
 		inputsStr = ",".join([f"{input.x},{input.y}" for input in block.inputs])
 		outputStr += f"{block.type},{block.x},{block.y},{block.value},{inputsStr};"
+	print("Exported Logic:")
 	print(outputStr[:-1])
 	return outputStr[:-1]
 
@@ -49,3 +50,4 @@ def decodeData(inputStr: str):
 						inputs.append(block)
 						break
 		thisBlock.inputs = inputs
+	print("Imported logic!")
