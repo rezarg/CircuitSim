@@ -2,7 +2,6 @@ import pygame, math, random
 
 window = None
 font = None
-blocks = None
 
 typeColorsOff = {
 	"default": (192, 192, 192),
@@ -36,11 +35,10 @@ typeColorsOn = {
 	"LED-B": (0, 0, 255),
 }
 
-def init(window_: pygame.Window, font_: pygame.font.Font, blocks_: list):
-	global window, font, blocks
+def init(window_: pygame.Window, font_: pygame.font.Font):
+	global window, font
 	window = window_
 	font = font_
-	blocks = blocks_
 
 def drawConnection(x1, y1, x2, y2, camX, camY, color=(128, 128, 128)):
 	x1, y1 = x1 + camX, y1 + camY
@@ -68,8 +66,6 @@ class Block:
 		else: self.colorOff = typeColorsOff["default"]
 		if type in typeColorsOn: self.colorOn = typeColorsOn[type]
 		else: self.colorOn = typeColorsOn["default"]
-
-		blocks.append(self)
 	
 	def draw(self, camX, camY):
 		if self.value: color = self.colorOn

@@ -9,6 +9,11 @@ instructions = [
 	"- to lower TPS.",
 	"+/= to increase TPS.",
 	"h to show this again.",
+	"Ctrl+C to copy selection.",
+	"Ctrl+V to paste selection.",
+	"1 to activate Normal rendering mode.",
+	"2 to activate Wireless rendering mode.",
+	"3 to activate LED-Exclusive rendering mode.",
 	"------------------------------------------------------",
 ]
 

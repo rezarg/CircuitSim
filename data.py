@@ -26,6 +26,7 @@ def decodeData(inputStr: str):
 		blockValue = bool(blockData[3])
 		newBlock = Block(blockType, blockX, blockY)
 		newBlock.value = blockValue
+		blocks.append(newBlock)
 	for blockData in inputStr:
 		blockData = blockData.split(",")
 		blockX = int(blockData[1])

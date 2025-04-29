@@ -25,6 +25,7 @@ camX, camY, camZoom = 0, 0, 1
 lastTick = 0
 dragging = False
 suppressClicks = False
+lastFrame = time.time()
 
 blockTypes = ["and", "nand", "or", "nor", "xor", "xnor", "rng", "t_flip-flop", "LED-W", "LED-R", "LED-G", "LED-B"]
 blockLabels = ["and", "nand", "or", "nor", "xor", "xnor", "RNG", "TFF", "LED W", "LED R", "LED G", "LED B"]
@@ -34,12 +35,15 @@ toolTypes = ["select", "connect", "pulse", "pan", "move", "delete"]
 toolLabels = ["select", "connect", "pulse", "pan", "move", "delete"]
 currentToolType = 0
 
+renderingMode = 1
+
 blocks: list[Block] = []
 selection: list[Block] = []
+selectionCopy: list[Block] = []
 buttonsLeft: list[Button] = []
 buttonsRight: list[Button] = []
 
-initLogic(window, font, blocks)
+initLogic(window, font)
 initData(blocks)
 
 def addTuple(t1: tuple, t2: tuple) -> tuple:
@@ -47,6 +51,23 @@ def addTuple(t1: tuple, t2: tuple) -> tuple:
 	for i in range(len(t1)):
 		res.append(t1[i] + t2[i])
 	return tuple(res)
+
+def copySelection():
+	global selectionCopy
+	selectionCopy = []
+	keyON: dict[Block, Block] = {} # Old -> New
+	keyNO: dict[Block, Block] = {} # Old <- New
+	for block in selection:
+		newBlock = Block(block.type, block.x, block.y)
+		newBlock.value = block.value
+		newBlock.nextValue = block.nextValue
+		selectionCopy.append(newBlock)
+		keyON[block] = newBlock
+		keyNO[newBlock] = block
+	for block in selectionCopy:
+		for x in keyNO[block].inputs:
+			if x in keyON:
+				block.inputs.append(keyON[x])
 
 for i in range(len(blockTypes)):
 	buttonSize = (72, 32)
@@ -75,6 +96,8 @@ for i in range(len(toolTypes)):
 	buttonsRight.append(newButton)
 
 while RUNNING:
+	thisFrame = time.time()
+	deltaTime = thisFrame - lastFrame
 	mouseDX, mouseDY = 0, 0
 	mouseX, mouseY = addTuple(pygame.mouse.get_pos(), (-camX, -camY))
 
@@ -120,6 +143,23 @@ while RUNNING:
 					blocks.remove(block)
 					selection.remove(block)
 					del block
+			elif event.key == pygame.K_c and pygame.key.get_pressed()[pygame.K_LCTRL]:
+				copySelection()
+				print("Copied selection.")
+			elif event.key == pygame.K_v and pygame.key.get_pressed()[pygame.K_LCTRL]:
+				selection = selectionCopy.copy()
+				for block in selection:
+					block.x += 20
+					block.y += 20
+				blocks.extend(selection)
+				print("Pasted selection.")
+				copySelection()
+			elif event.key == pygame.K_1:
+				renderingMode = 1
+			elif event.key == pygame.K_2:
+				renderingMode = 2
+			elif event.key == pygame.K_3:
+				renderingMode = 3
 		if event.type == pygame.MOUSEBUTTONDOWN and not suppressClicks:
 			if event.button != 1: continue
 			dragStartX, dragStartY = mouseX, mouseY
@@ -129,7 +169,7 @@ while RUNNING:
 					if logic.x - 10 < mouseX < logic.x + 10 and logic.y - 10 < mouseY < logic.y + 10:
 						break
 				else:
-					Block(blockTypes[currentBlockType], mouseX, mouseY)
+					blocks.append(Block(blockTypes[currentBlockType], mouseX, mouseY))
 			elif currentToolType != -1:
 				if toolTypes[currentToolType] == "connect":
 					for logic in blocks:
@@ -216,7 +256,7 @@ while RUNNING:
 			else:
 				y = mouseY
 				h = dragStartY - y
-			pygame.draw.rect(window, (128, 128, 128), (x, y, w, h), 1)
+			pygame.draw.rect(window, (128, 128, 128), (x+camX, y+camY, w, h), 1)
 		elif toolTypes[currentToolType] == "move":
 			for block in selection:
 				block.x += mouseDX
@@ -224,15 +264,17 @@ while RUNNING:
 	
 	doTick = time.time() - lastTick > 1 / TPS
 	for block in blocks:
-		block.drawInputs(camX, camY)
+		if renderingMode == 1:
+			block.drawInputs(camX, camY)
 		if doTick: block.updateIn()
 	for block in blocks:
-		block.draw(camX, camY)
+		if renderingMode != 3 or block.type.startswith("LED"):
+			block.draw(camX, camY)
 		if doTick: block.updateOut()
 	if doTick: lastTick = time.time()
 
 	for block in selection:
-		pygame.draw.rect(window, (0, 255, 255), (block.x-12, block.y-12, 24, 24), 2)
+		pygame.draw.rect(window, (0, 255, 255), (block.x-12+camX, block.y-12+camY, 24, 24), 2)
 
 	pygame.draw.rect(window, (128, 128, 128), (mouseX-8+camX, mouseY-8+camY, 16, 16), 1)
 
@@ -251,9 +293,14 @@ while RUNNING:
 	text = font.render("TPS: " + str(TPS), True, (255, 255, 255))
 	window.blit(text, (window.get_width() - text.get_width() - 4, 4))
 
+	if deltaTime != 0: text = font.render("FPS: " + str(int(1/deltaTime)), True, (255, 255, 255))
+	else: text = font.render("FPS: ?", True, (255, 255, 255))
+	window.blit(text, (window.get_width() - text.get_width() - 4, 20))
+
 	lastMousePos = pygame.mouse.get_pos()
 
 	pygame.display.flip()
+	lastFrame = thisFrame
 
 # ➖🟩🟩🟩
 # ➖🟩🟩⬛
