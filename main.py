@@ -3,6 +3,9 @@ import pygame, time
 from logic import Block, drawConnection, init as initLogic
 from data import encodeData, decodeData, init as initData
 from button import Button
+from help import howtouse
+
+howtouse()
 
 pygame.init()
 pygame.font.init()
@@ -56,6 +59,10 @@ while RUNNING:
 	mouseDX, mouseDY = 0, 0
 	mouseX, mouseY = addTuple(pygame.mouse.get_pos(), (-camX, -camY))
 
+	if not pygame.key.get_pressed()[pygame.K_LSHIFT]:
+		mouseX = mouseX // 20 * 20 + 10
+		mouseY = mouseY // 20 * 20 + 10
+
 	suppressClicks = False
 	for event in pygame.event.get():
 		suppressClicks = any([button.check(event) for button in buttons])
@@ -78,6 +85,8 @@ while RUNNING:
 			elif event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS:
 				TPS -= 5
 				if TPS < 5: TPS = 5
+			elif event.key == pygame.K_h:
+				howtouse()
 		if event.type == pygame.MOUSEBUTTONDOWN and not suppressClicks:
 			dragStartX, dragStartY = mouseX, mouseY
 			if event.button == 1:
