@@ -11,6 +11,7 @@ instructions = [
 	"S to save logic to a file.",
 	"L to load logic from a file name.",
 	"E to pulse a logic gate.",
+	"T to input TPS value from the console.",
 	"- to lower TPS.",
 	"+/= to increase TPS.",
 	"h to show this again.",

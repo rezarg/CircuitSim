@@ -86,6 +86,12 @@ while RUNNING:
 			elif event.key == pygame.K_l:
 				fileName = input("Load file name: ")
 				with open(f"{fileName}.txt", "r") as f: decodeData(f.read())
+			elif event.key == pygame.K_t:
+				tpsInput = int(input("TPS: "))
+				if not tpsInput: continue
+				if tpsInput < 5: tpsInput = 5
+				if tpsInput > 1000: tpsInput = 1000
+				TPS = tpsInput
 			elif event.key == pygame.K_EQUALS or event.key == pygame.K_PLUS or event.key == pygame.K_KP_PLUS:
 				TPS += 5
 				if TPS > 1000: TPS = 1000
